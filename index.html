@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tracker</title>
+    <link rel="stylesheet" href="styles.css?v=2">
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Daily Tracker</h1>
+        </header>
+
+        <div class="main-content">
+            <!-- Add New Habit Section -->
+            <section class="add-habit-section">
+                <h2>Add New Habit</h2>
+                <form id="habit-form" class="habit-form">
+                    <div class="form-group">
+                        <input type="text" id="habit-name" placeholder="Enter habit name..." required>
+                        <button type="submit" class="btn-submit">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <!-- Habits Display Section -->
+            <section class="habits-section">
+                <div id="habits-container" class="habits-container">
+                    <!-- Habits will be dynamically added here -->
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Modal for editing habits -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Edit Habit</h2>
+            <form id="edit-form">
+                <div class="form-group">
+                    <label for="edit-habit-name">Habit Name</label>
+                    <input type="text" id="edit-habit-name" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" id="delete-habit" class="btn btn-danger">Delete Habit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js?v=2"></script>
+</body>
+</html> 
