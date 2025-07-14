@@ -1,11 +1,15 @@
+const SUPABASE_URL = 'https://ahlqtbmmvefgwjhbrcpj.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobHF0Ym1tdmVmZ3dqaGJyY3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NDEwNjMsImV4cCI6MjA2ODAxNzA2M30.ebIpSg8WsdWTf-JDhTCkRRVYKfjOYryxKt9iGm0XsNw';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 // Habit Tracker JavaScript - Minimalist Version
 
 class HabitTracker {
     constructor() {
         // Clear localStorage to ensure new colors are applied
-        localStorage.removeItem('habits');
+        // localStorage.removeItem('habits'); // Removed as per instructions
         
-        this.habits = JSON.parse(localStorage.getItem('habits')) || [];
+        // this.habits = JSON.parse(localStorage.getItem('habits')) || []; // Removed as per instructions
         this.editingHabitId = null;
         
         // 10-color harmonious pastel palette
@@ -61,45 +65,43 @@ class HabitTracker {
         });
     }
 
-    addHabit() {
+    async addHabit() {
         const nameInput = document.getElementById('habit-name');
-
-        // Get a random color from the palette
         const randomColor = this.colorPalette[Math.floor(Math.random() * this.colorPalette.length)];
-
         const habit = {
-            id: Date.now().toString(),
             name: nameInput.value.trim(),
             color: randomColor,
-            completedDates: [],
-            createdAt: new Date().toISOString()
+            completed_dates: [],
+            created_at: new Date().toISOString()
         };
-
-        this.habits.push(habit);
-        this.saveHabits();
+        // Insert into Supabase
+        const { error } = await supabase
+            .from('habits')
+            .insert([habit]);
+        if (error) {
+            alert('Error adding habit: ' + error.message);
+            return;
+        }
         this.renderHabits();
-
-        // Reset form
         nameInput.value = '';
-
-        // Show success message
         this.showNotification('Habit added successfully!', 'success');
     }
 
-    renderHabits() {
+    async renderHabits() {
         const container = document.getElementById('habits-container');
         container.innerHTML = '';
-
-        if (this.habits.length === 0) {
-            container.innerHTML = `
-                <div class="empty-state">
-                    <p>No habits yet. Add your first habit to get started!</p>
-                </div>
-            `;
+        const { data: habits, error } = await supabase
+            .from('habits')
+            .select('*');
+        if (error) {
+            container.innerHTML = '<div class="empty-state"><p>Error loading habits.</p></div>';
             return;
         }
-
-        this.habits.forEach(habit => {
+        if (!habits.length) {
+            container.innerHTML = '<div class="empty-state"><p>No habits yet. Add your first habit to get started!</p></div>';
+            return;
+        }
+        habits.forEach(habit => {
             const habitCard = this.createHabitCard(habit);
             container.appendChild(habitCard);
         });
@@ -193,7 +195,7 @@ class HabitTracker {
             currentDate.setDate(startDate.getDate() + i);
             
             const dateString = currentDate.toISOString().split('T')[0];
-            const isCompleted = habit.completedDates.includes(dateString);
+            const isCompleted = habit.completed_dates.includes(dateString);
             const isToday = dateString === today.toISOString().split('T')[0];
             const isFuture = currentDate > today;
             const isOtherMonth = currentDate.getMonth() !== month;
@@ -215,21 +217,31 @@ class HabitTracker {
         return calendar;
     }
 
-    toggleHabitCompletion(habitId, dateString) {
-        const habit = this.habits.find(h => h.id === habitId);
+    async toggleHabitCompletion(habitId, dateString) {
+        // Fetch the habit
+        const { data: habits } = await supabase
+            .from('habits')
+            .select('*')
+            .eq('id', habitId);
+        const habit = habits[0];
         if (!habit) return;
 
-        const isCompleted = habit.completedDates.includes(dateString);
+        let completed_dates = habit.completed_dates || [];
+        const isCompleted = completed_dates.includes(dateString);
 
         if (isCompleted) {
-            habit.completedDates = habit.completedDates.filter(date => date !== dateString);
+            completed_dates = completed_dates.filter(date => date !== dateString);
         } else {
-            habit.completedDates.push(dateString);
+            completed_dates.push(dateString);
         }
 
-        this.saveHabits();
-        this.renderHabits();
+        // Update in Supabase
+        await supabase
+            .from('habits')
+            .update({ completed_dates })
+            .eq('id', habitId);
 
+        this.renderHabits();
         const message = isCompleted ? 'Habit marked as incomplete' : 'Habit completed!';
         this.showNotification(message, isCompleted ? 'info' : 'success');
     }
@@ -243,12 +255,12 @@ class HabitTracker {
     }
 
     saveHabitEdit() {
-        const habit = this.habits.find(h => h.id === this.editingHabitId);
-        if (!habit) return;
+        // const habit = this.habits.find(h => h.id === this.editingHabitId); // Removed as per instructions
+        // if (!habit) return; // Removed as per instructions
 
-        habit.name = document.getElementById('edit-habit-name').value.trim();
+        // habit.name = document.getElementById('edit-habit-name').value.trim(); // Removed as per instructions
 
-        this.saveHabits();
+        // this.saveHabits(); // Removed as per instructions
         this.renderHabits();
 
         document.getElementById('edit-modal').style.display = 'none';
@@ -257,24 +269,21 @@ class HabitTracker {
         this.showNotification('Habit updated successfully!', 'success');
     }
 
-    deleteHabit() {
+    async deleteHabit() {
         if (!this.editingHabitId) return;
-
-        if (confirm('Are you sure you want to delete this habit? This action cannot be undone.')) {
-            this.habits = this.habits.filter(h => h.id !== this.editingHabitId);
-            this.saveHabits();
-            this.renderHabits();
-
-            document.getElementById('edit-modal').style.display = 'none';
-            this.editingHabitId = null;
-
-            this.showNotification('Habit deleted successfully!', 'success');
-        }
+        await supabase
+            .from('habits')
+            .delete()
+            .eq('id', this.editingHabitId);
+        this.renderHabits();
+        document.getElementById('edit-modal').style.display = 'none';
+        this.editingHabitId = null;
+        this.showNotification('Habit deleted successfully!', 'success');
     }
 
-    saveHabits() {
-        localStorage.setItem('habits', JSON.stringify(this.habits));
-    }
+    // saveHabits() { // Removed as per instructions
+    //     localStorage.setItem('habits', JSON.stringify(this.habits)); // Removed as per instructions
+    // } // Removed as per instructions
 
     showNotification(message, type = 'info') {
         // Create notification element
@@ -320,47 +329,47 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Add some sample data for demonstration (optional)
-function addSampleHabits() {
-    const sampleHabits = [
-        {
-            id: '1',
-            name: 'Exercise',
-            color: '#FF8A9A', // Coral Pink
-            completedDates: [],
-            createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString()
-        },
-        {
-            id: '2',
-            name: 'Read',
-            color: '#8AFF9A', // Mint Green
-            completedDates: [],
-            createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString()
-        }
-    ];
+// function addSampleHabits() { // Removed as per instructions
+//     const sampleHabits = [ // Removed as per instructions
+//         { // Removed as per instructions
+//             id: '1', // Removed as per instructions
+//             name: 'Exercise', // Removed as per instructions
+//             color: '#FF8A9A', // Removed as per instructions
+//             completedDates: [], // Removed as per instructions
+//             createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString() // Removed as per instructions
+//         }, // Removed as per instructions
+//         { // Removed as per instructions
+//             id: '2', // Removed as per instructions
+//             name: 'Read', // Removed as per instructions
+//             color: '#8AFF9A', // Removed as per instructions
+//             completedDates: [], // Removed as per instructions
+//             createdAt: new Date(Date.now() - 20 * 24 * 60 * 60 * 1000).toISOString() // Removed as per instructions
+//         } // Removed as per instructions
+//     ]; // Removed as per instructions
 
-    // Add some sample completion data for the past few months
-    const today = new Date();
-    for (let i = 0; i < 90; i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        const dateString = date.toISOString().split('T')[0];
+//     // Add some sample completion data for the past few months // Removed as per instructions
+//     const today = new Date(); // Removed as per instructions
+//     for (let i = 0; i < 90; i++) { // Removed as per instructions
+//         const date = new Date(today); // Removed as per instructions
+//         date.setDate(date.getDate() - i); // Removed as per instructions
+//         const dateString = date.toISOString().split('T')[0]; // Removed as per instructions
         
-        // Randomly mark some habits as completed
-        sampleHabits.forEach(habit => {
-            if (Math.random() > 0.4) { // 60% chance of completion
-                habit.completedDates.push(dateString);
-            }
-        });
-    }
+//         // Randomly mark some habits as completed // Removed as per instructions
+//         sampleHabits.forEach(habit => { // Removed as per instructions
+//             if (Math.random() > 0.4) { // Removed as per instructions
+//                 habit.completedDates.push(dateString); // Removed as per instructions
+//             } // Removed as per instructions
+//         }); // Removed as per instructions
+//     } // Removed as per instructions
 
-    localStorage.setItem('habits', JSON.stringify(sampleHabits));
-}
+//     localStorage.setItem('habits', JSON.stringify(sampleHabits)); // Removed as per instructions
+// } // Removed as per instructions
 
-// Function to clear all data
-function clearAllData() {
-    localStorage.removeItem('habits');
-    location.reload();
-}
+// Function to clear all data // Removed as per instructions
+// function clearAllData() { // Removed as per instructions
+//     localStorage.removeItem('habits'); // Removed as per instructions
+//     location.reload(); // Removed as per instructions
+// } // Removed as per instructions
 
-// Uncomment the line below to add sample data for demonstration
+// Uncomment the line below to add sample data for demonstration // Removed as per instructions
 // addSampleHabits(); 
