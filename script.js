@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://ahlqtbmmvefgwjhbrcpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobHF0Ym1tdmVmZ3dqaGJyY3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NDEwNjMsImV4cCI6MjA2ODAxNzA2M30.ebIpSg8WsdWTf-JDhTCkRRVYKfjOYryxKt9iGm0XsNw';
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Habit Tracker JavaScript - Minimalist Version
 
@@ -75,7 +75,7 @@ class HabitTracker {
             created_at: new Date().toISOString()
         };
         // Insert into Supabase
-        const { error } = await supabase
+        const { error } = await supabaseClient
             .from('habits')
             .insert([habit]);
         if (error) {
@@ -90,7 +90,7 @@ class HabitTracker {
     async renderHabits() {
         const container = document.getElementById('habits-container');
         container.innerHTML = '';
-        const { data: habits, error } = await supabase
+        const { data: habits, error } = await supabaseClient
             .from('habits')
             .select('*');
         if (error) {
@@ -219,7 +219,7 @@ class HabitTracker {
 
     async toggleHabitCompletion(habitId, dateString) {
         // Fetch the habit
-        const { data: habits } = await supabase
+        const { data: habits } = await supabaseClient
             .from('habits')
             .select('*')
             .eq('id', habitId);
@@ -236,7 +236,7 @@ class HabitTracker {
         }
 
         // Update in Supabase
-        await supabase
+        await supabaseClient
             .from('habits')
             .update({ completed_dates })
             .eq('id', habitId);
@@ -271,7 +271,7 @@ class HabitTracker {
 
     async deleteHabit() {
         if (!this.editingHabitId) return;
-        await supabase
+        await supabaseClient
             .from('habits')
             .delete()
             .eq('id', this.editingHabitId);
