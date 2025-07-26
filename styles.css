@@ -153,6 +153,7 @@ body {
     cursor: pointer;
     height: 0;
     width: 0;
+    display: none; /* Hide the default checkbox completely */
 }
 
 .checkmark {
