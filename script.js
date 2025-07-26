@@ -185,10 +185,18 @@ class HabitTracker {
                 todayTasks.forEach(habit => {
                     const dailyTasks = habit.daily_tasks || {};
                     const todayTasks = dailyTasks[dayOfWeek] || [];
+                    const today = new Date().toISOString().split('T')[0];
+                    const isCompleted = habit.completed_dates && habit.completed_dates.includes(today);
                     
                     todayHTML += `
                         <div class="today-task" style="--habit-color: ${habit.color}">
-                            <div class="task-name">${habit.name}</div>
+                            <div class="task-header">
+                                <div class="task-name">${habit.name}</div>
+                                <label class="task-checkbox">
+                                    <input type="checkbox" ${isCompleted ? 'checked' : ''} data-habit-id="${habit.id}" data-date="${today}">
+                                    <span class="checkmark"></span>
+                                </label>
+                            </div>
                             <div class="task-list">
                                 ${todayTasks.map(task => `<div class="task-item">• ${task}</div>`).join('')}
                             </div>
@@ -197,6 +205,35 @@ class HabitTracker {
                 });
                 
                 todayContainer.innerHTML = todayHTML;
+                
+                // Add event listeners to checkboxes
+                const checkboxes = todayContainer.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const habitId = e.target.dataset.habitId;
+                        const date = e.target.dataset.date;
+                        const isChecked = e.target.checked;
+                        
+                        this.toggleHabitCompletion(habitId, date);
+                        
+                        // Update the visual state of the calendar cell
+                        const habitCards = document.querySelectorAll('.habit-card');
+                        for (const card of habitCards) {
+                            const editBtn = card.querySelector('.edit-btn');
+                            if (editBtn && editBtn.dataset.habitId === habitId) {
+                                const calendarCell = card.querySelector(`.day-cell[data-date="${date}"]`);
+                                if (calendarCell) {
+                                    if (isChecked) {
+                                        calendarCell.classList.add('completed');
+                                    } else {
+                                        calendarCell.classList.remove('completed');
+                                    }
+                                }
+                                break;
+                            }
+                        }
+                    });
+                });
             });
     }
 
@@ -386,6 +423,15 @@ class HabitTracker {
                 clickedCell.classList.remove('completed');
             } else {
                 clickedCell.classList.add('completed');
+            }
+        }
+        
+        // Also update the checkbox in Today's Tasks if it's today's date
+        const today = new Date().toISOString().split('T')[0];
+        if (dateString === today) {
+            const todayCheckbox = document.querySelector(`input[data-habit-id="${habitId}"][data-date="${today}"]`);
+            if (todayCheckbox) {
+                todayCheckbox.checked = !isCompleted;
             }
         }
     }

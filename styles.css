@@ -97,6 +97,65 @@ body {
     padding-left: 8px;
 }
 
+/* Today's Tasks Checkbox Styles */
+.task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.task-checkbox {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+}
+
+.task-checkbox input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    height: 20px;
+    width: 20px;
+    background-color: white;
+    border: 2px solid var(--habit-color, #e78ab6);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+.task-checkbox:hover input ~ .checkmark {
+    background-color: #f8f9fa;
+}
+
+.task-checkbox input:checked ~ .checkmark {
+    background-color: var(--habit-color, #e78ab6);
+    border-color: var(--habit-color, #e78ab6);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 4px;
+    height: 8px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.task-checkbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
 /* Task Editing Styles */
 .daily-tasks-section {
     margin: 20px 0;
