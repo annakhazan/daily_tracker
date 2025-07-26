@@ -110,7 +110,7 @@ class HabitTracker {
         const color = this.colorPalette[colorIndex];
         const habit = {
             name: habitName,
-            color: randomColor,
+            color: color,
             completed_dates: [],
             daily_tasks: {
                 monday: [],
@@ -125,7 +125,7 @@ class HabitTracker {
         };
         
         console.log('Attempting to insert habit:', habit);
-        console.log('Using color:', randomColor);
+        console.log('Using color:', color);
         
         // Insert into Supabase
         const { data, error } = await supabaseClient
@@ -448,10 +448,10 @@ class HabitTracker {
         
         let currentDate = new Date(startDate);
         while (currentDate <= endDate) {
-            const dateString = currentDate.toISOString().split('T')[0];
+            const dateString = currentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format in local time
             const isCompleted = habit.completed_dates.includes(dateString);
-            const isToday = dateString === today.toISOString().split('T')[0];
-            const isFuture = currentDate > today;
+            const isToday = dateString === today.toLocaleDateString('en-CA');
+            const isFuture = dateString > today.toLocaleDateString('en-CA');
             const isOtherMonth = currentDate.getMonth() !== month;
             
             let classes = 'day-cell';
