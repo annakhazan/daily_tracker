@@ -63,6 +63,41 @@ class HabitTracker {
         document.getElementById('delete-habit').addEventListener('click', () => {
             this.deleteHabit();
         });
+
+        // Task input functionality
+        this.initializeTaskInputs();
+    }
+
+    initializeTaskInputs() {
+        // Add task button functionality
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('add-task-btn')) {
+                const taskInputGroup = e.target.closest('.task-input-group');
+                const taskInput = taskInputGroup.querySelector('.task-input');
+                const taskText = taskInput.value.trim();
+                
+                if (taskText) {
+                    const taskInputs = taskInputGroup.closest('.task-inputs');
+                    this.addTaskItem(taskInputs, taskText);
+                    taskInput.value = '';
+                }
+            }
+        });
+
+        // Enter key functionality for task inputs
+        document.addEventListener('keypress', (e) => {
+            if (e.target.classList.contains('task-input') && e.key === 'Enter') {
+                e.preventDefault();
+                const taskInputGroup = e.target.closest('.task-input-group');
+                const taskText = e.target.value.trim();
+                
+                if (taskText) {
+                    const taskInputs = taskInputGroup.closest('.task-inputs');
+                    this.addTaskItem(taskInputs, taskText);
+                    e.target.value = '';
+                }
+            }
+        });
     }
 
     async addHabit() {
@@ -350,21 +385,87 @@ class HabitTracker {
         
         document.getElementById('edit-habit-name').value = habit.name;
         
+        // Populate daily tasks
+        const dailyTasks = habit.daily_tasks || {};
+        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        
+        days.forEach(day => {
+            const taskInputs = document.querySelector(`[data-day="${day}"]`);
+            if (taskInputs) {
+                // Clear existing tasks
+                const existingTasks = taskInputs.querySelectorAll('.task-item-edit');
+                existingTasks.forEach(task => task.remove());
+                
+                // Add existing tasks
+                const tasks = dailyTasks[day] || [];
+                tasks.forEach(task => {
+                    this.addTaskItem(taskInputs, task);
+                });
+            }
+        });
+        
         document.getElementById('edit-modal').style.display = 'block';
     }
 
-    saveHabitEdit() {
-        // const habit = this.habits.find(h => h.id === this.editingHabitId); // Removed as per instructions
-        // if (!habit) return; // Removed as per instructions
+    addTaskItem(container, taskText = '') {
+        const taskItem = document.createElement('div');
+        taskItem.className = 'task-item-edit';
+        taskItem.innerHTML = `
+            <span>${taskText}</span>
+            <button type="button" class="remove-task-btn">×</button>
+        `;
+        
+        // Add remove functionality
+        taskItem.querySelector('.remove-task-btn').addEventListener('click', () => {
+            taskItem.remove();
+        });
+        
+        container.appendChild(taskItem);
+    }
 
-        // habit.name = document.getElementById('edit-habit-name').value.trim(); // Removed as per instructions
-
-        // this.saveHabits(); // Removed as per instructions
+    async saveHabitEdit() {
+        if (!this.editingHabitId) return;
+        
+        const habitName = document.getElementById('edit-habit-name').value.trim();
+        if (!habitName) return;
+        
+        // Collect daily tasks
+        const dailyTasks = {};
+        const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+        
+        days.forEach(day => {
+            const taskInputs = document.querySelector(`[data-day="${day}"]`);
+            if (taskInputs) {
+                const tasks = [];
+                taskInputs.querySelectorAll('.task-item-edit span').forEach(span => {
+                    const taskText = span.textContent.trim();
+                    if (taskText) {
+                        tasks.push(taskText);
+                    }
+                });
+                dailyTasks[day] = tasks;
+            }
+        });
+        
+        // Update in Supabase
+        const { error } = await supabaseClient
+            .from('habits')
+            .update({
+                name: habitName,
+                daily_tasks: dailyTasks
+            })
+            .eq('id', this.editingHabitId);
+            
+        if (error) {
+            console.error('Error updating habit:', error);
+            alert('Error updating habit: ' + error.message);
+            return;
+        }
+        
         this.renderHabits();
-
+        this.renderTodayTasks();
         document.getElementById('edit-modal').style.display = 'none';
         this.editingHabitId = null;
-
         this.showNotification('Habit updated successfully!', 'success');
     }
 

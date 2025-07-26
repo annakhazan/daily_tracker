@@ -97,6 +97,118 @@ body {
     padding-left: 8px;
 }
 
+/* Task Editing Styles */
+.daily-tasks-section {
+    margin: 20px 0;
+}
+
+.daily-tasks-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #2D3748;
+}
+
+.days-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.day-tasks {
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.day-tasks label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: #2D3748;
+    margin-bottom: 8px;
+}
+
+.task-inputs {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-input-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.task-input {
+    flex: 1;
+    padding: 6px 8px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-family: inherit;
+}
+
+.task-input:focus {
+    outline: none;
+    border-color: #e78ab6;
+}
+
+.add-task-btn {
+    background: #e78ab6;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.add-task-btn:hover {
+    background: #d67a9a;
+}
+
+.task-item-edit {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    background: white;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+}
+
+.task-item-edit span {
+    flex: 1;
+    font-size: 0.75rem;
+    color: #4A5568;
+}
+
+.remove-task-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 2px;
+    width: 16px;
+    height: 16px;
+    font-size: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.remove-task-btn:hover {
+    background: #ff5252;
+}
+
 /* Section styles */
 section {
     background: transparent;
