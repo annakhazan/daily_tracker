@@ -259,7 +259,27 @@ class HabitTracker {
             .update({ completed_dates })
             .eq('id', habitId);
 
-        this.renderHabits();
+        // Update only the visual state of the clicked date
+        // Find the habit card that contains the clicked cell
+        const habitCards = document.querySelectorAll('.habit-card');
+        let clickedCell = null;
+        
+        for (const card of habitCards) {
+            const editBtn = card.querySelector('.edit-btn');
+            if (editBtn && editBtn.dataset.habitId === habitId) {
+                clickedCell = card.querySelector(`.day-cell[data-date="${dateString}"]`);
+                break;
+            }
+        }
+        
+        if (clickedCell) {
+            if (isCompleted) {
+                clickedCell.classList.remove('completed');
+            } else {
+                clickedCell.classList.add('completed');
+            }
+        }
+
         const message = isCompleted ? 'Habit marked as incomplete' : 'Habit completed!';
         this.showNotification(message, isCompleted ? 'info' : 'success');
     }
