@@ -161,12 +161,9 @@ class HabitTracker {
                 
                 console.log('All habits:', habits);
                 
-                const todayTasks = habits.filter(habit => {
-                    const dailyTasks = habit.daily_tasks || {};
-                    const todayTasks = dailyTasks[dayOfWeek] || [];
-                    console.log(`Habit "${habit.name}" has ${todayTasks.length} tasks for ${dayOfWeek}:`, todayTasks);
-                    return todayTasks.length > 0;
-                });
+                // Show all habits in Today's Tasks, regardless of whether they have specific daily tasks
+                const todayTasks = habits;
+                console.log(`Showing ${todayTasks.length} habits in Today's Tasks`);
                 
                 console.log('Habits with tasks for today:', todayTasks);
                 
@@ -198,7 +195,10 @@ class HabitTracker {
                                 </label>
                             </div>
                             <div class="task-list">
-                                ${todayTasks.map(task => `<div class="task-item">• ${task}</div>`).join('')}
+                                ${todayTasks.length > 0 
+                                    ? todayTasks.map(task => `<div class="task-item">• ${task}</div>`).join('')
+                                    : '<div class="task-item">Complete this habit today</div>'
+                                }
                             </div>
                         </div>
                     `;
