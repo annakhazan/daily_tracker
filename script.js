@@ -13,11 +13,14 @@ class TaskTracker {
         // Check if already authenticated
         if (sessionStorage.getItem('taskTrackerAuthenticated') === 'true') {
             this.isAuthenticated = true;
+            this.initializeApp();
             this.showApp();
         } else {
             this.showPasswordScreen();
         }
-        
+    }
+
+    initializeApp() {
         // Clear localStorage to ensure new colors are applied
         // localStorage.removeItem('habits'); // Removed as per instructions
         
@@ -57,6 +60,7 @@ class TaskTracker {
         if (password === this.password) {
             this.isAuthenticated = true;
             sessionStorage.setItem('taskTrackerAuthenticated', 'true');
+            this.initializeApp();
             this.showApp();
             return true;
         } else {
