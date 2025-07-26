@@ -186,13 +186,16 @@ class HabitTracker {
                     const isCompleted = habit.completed_dates && habit.completed_dates.includes(today);
                     
                     todayHTML += `
-                        <div class="today-task" style="--habit-color: ${habit.color}" data-habit-id="${habit.id}" data-date="${today}">
+                        <div class="today-task ${isCompleted ? 'completed' : ''}" style="--habit-color: ${habit.color}" data-habit-id="${habit.id}" data-date="${today}">
                             <div class="task-header">
                                 <div class="task-name">${habit.name}</div>
-                                <label class="task-checkbox">
-                                    <input type="checkbox" ${isCompleted ? 'checked' : ''} data-habit-id="${habit.id}" data-date="${today}">
-                                    <span class="checkmark"></span>
-                                </label>
+                                <div class="task-status">
+                                    ${isCompleted ? '<span class="completion-checkmark">✓</span>' : ''}
+                                    <label class="task-checkbox">
+                                        <input type="checkbox" ${isCompleted ? 'checked' : ''} data-habit-id="${habit.id}" data-date="${today}">
+                                        <span class="checkmark"></span>
+                                    </label>
+                                </div>
                             </div>
                             <div class="task-list">
                                 ${todayTasks.length > 0 
@@ -237,6 +240,27 @@ class HabitTracker {
                                     console.log('Updated calendar cell');
                                 }
                                 break;
+                            }
+                        }
+                        
+                        // Update the visual state of the task item
+                        const taskItem = e.target.closest('.today-task');
+                        if (taskItem) {
+                            if (isChecked) {
+                                taskItem.classList.add('completed');
+                                const statusDiv = taskItem.querySelector('.task-status');
+                                if (statusDiv && !statusDiv.querySelector('.completion-checkmark')) {
+                                    const checkmark = document.createElement('span');
+                                    checkmark.className = 'completion-checkmark';
+                                    checkmark.textContent = '✓';
+                                    statusDiv.insertBefore(checkmark, statusDiv.firstChild);
+                                }
+                            } else {
+                                taskItem.classList.remove('completed');
+                                const checkmark = taskItem.querySelector('.completion-checkmark');
+                                if (checkmark) {
+                                    checkmark.remove();
+                                }
                             }
                         }
                     });

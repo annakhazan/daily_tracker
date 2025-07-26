@@ -82,6 +82,34 @@ body {
     transform: translateX(2px);
 }
 
+.today-task.completed {
+    background: #e8eaed;
+    opacity: 0.8;
+}
+
+.today-task.completed .task-name {
+    text-decoration: line-through;
+    color: #6b7280;
+}
+
+.today-task.completed .task-item {
+    text-decoration: line-through;
+    color: #6b7280;
+}
+
+.task-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.completion-checkmark {
+    color: var(--habit-color, #e78ab6);
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-right: 4px;
+}
+
 .today-task:last-child {
     margin-bottom: 0;
 }
