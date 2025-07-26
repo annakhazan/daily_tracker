@@ -279,9 +279,6 @@ class HabitTracker {
                 clickedCell.classList.add('completed');
             }
         }
-
-        const message = isCompleted ? 'Habit marked as incomplete' : 'Habit completed!';
-        this.showNotification(message, isCompleted ? 'info' : 'success');
     }
 
     openEditModal(habit) {
