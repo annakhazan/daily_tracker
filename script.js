@@ -67,11 +67,24 @@ class HabitTracker {
 
     async addHabit() {
         const nameInput = document.getElementById('habit-name');
+        const habitName = nameInput.value.trim();
+        
+        if (!habitName) return;
+        
         const randomColor = this.colorPalette[Math.floor(Math.random() * this.colorPalette.length)];
         const habit = {
-            name: nameInput.value.trim(),
+            name: habitName,
             color: randomColor,
             completed_dates: [],
+            daily_tasks: {
+                monday: [],
+                tuesday: [],
+                wednesday: [],
+                thursday: [],
+                friday: [],
+                saturday: [],
+                sunday: []
+            },
             created_at: new Date().toISOString()
         };
         
@@ -90,8 +103,56 @@ class HabitTracker {
         
         console.log('Successfully inserted habit:', data);
         this.renderHabits();
+        this.renderTodayTasks();
         nameInput.value = '';
         this.showNotification('Habit added successfully!', 'success');
+    }
+
+    renderTodayTasks() {
+        const today = new Date();
+        const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'lowercase' });
+        
+        // Get all habits and filter for today's tasks
+        supabaseClient
+            .from('habits')
+            .select('*')
+            .then(({ data: habits, error }) => {
+                if (error) {
+                    console.error('Error fetching habits for today:', error);
+                    return;
+                }
+                
+                const todayTasks = habits.filter(habit => {
+                    const dailyTasks = habit.daily_tasks || {};
+                    const todayTasks = dailyTasks[dayOfWeek] || [];
+                    return todayTasks.length > 0;
+                });
+                
+                const todayContainer = document.getElementById('today-tasks');
+                if (!todayContainer) return;
+                
+                if (todayTasks.length === 0) {
+                    todayContainer.innerHTML = '<div class="empty-state"><p>No tasks scheduled for today.</p></div>';
+                    return;
+                }
+                
+                let todayHTML = '<h3>Today\'s Tasks</h3>';
+                todayTasks.forEach(habit => {
+                    const dailyTasks = habit.daily_tasks || {};
+                    const todayTasks = dailyTasks[dayOfWeek] || [];
+                    
+                    todayHTML += `
+                        <div class="today-task" style="--habit-color: ${habit.color}">
+                            <div class="task-name">${habit.name}</div>
+                            <div class="task-list">
+                                ${todayTasks.map(task => `<div class="task-item">• ${task}</div>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                todayContainer.innerHTML = todayHTML;
+            });
     }
 
     async renderHabits() {
@@ -123,6 +184,9 @@ class HabitTracker {
             const habitCard = this.createHabitCard(habit);
             container.appendChild(habitCard);
         });
+        
+        // Also render today's tasks
+        this.renderTodayTasks();
     }
 
     createHabitCard(habit) {

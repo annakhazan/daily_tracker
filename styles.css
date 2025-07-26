@@ -48,6 +48,55 @@ body {
     gap: 16px;
 }
 
+/* Today's Tasks Section */
+.today-tasks-section {
+    margin-bottom: 20px;
+}
+
+.today-tasks {
+    background: white;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.today-tasks h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #2D3748;
+}
+
+.today-task {
+    margin-bottom: 12px;
+    padding: 12px;
+    border-radius: 8px;
+    background: #f8f9fa;
+    border-left: 4px solid var(--habit-color, #e78ab6);
+}
+
+.today-task:last-child {
+    margin-bottom: 0;
+}
+
+.task-name {
+    font-weight: 600;
+    color: #2D3748;
+    margin-bottom: 8px;
+}
+
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.task-item {
+    font-size: 0.875rem;
+    color: #4A5568;
+    padding-left: 8px;
+}
+
 /* Section styles */
 section {
     background: transparent;
