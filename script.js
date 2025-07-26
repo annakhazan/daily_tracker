@@ -145,7 +145,7 @@ class HabitTracker {
 
     renderTodayTasks() {
         const today = new Date();
-        const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'lowercase' });
+        const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
         
         console.log('Today is:', dayOfWeek);
         
