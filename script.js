@@ -12,18 +12,16 @@ class HabitTracker {
         // this.habits = JSON.parse(localStorage.getItem('habits')) || []; // Removed as per instructions
         this.editingHabitId = null;
         
-        // 10-color harmonious pastel palette
+        // New color palette
         this.colorPalette = [
-            '#e78ab6', // pink
-            '#f4a6c1', // rose
-            '#fbc6e2', // light pink
-            '#f7d1ea', // blush
-            '#ffc3b1', // peach
-            '#ffd6c3', // apricot
-            '#ffe3d3', // pale peach
-            '#b6a6f8', // lavender
-            '#a6a1f7', // periwinkle
-            '#8883e6'  // soft violet
+            '#003f5c', // dark blue
+            '#2f4b7c', // navy
+            '#665191', // purple
+            '#a05195', // magenta
+            '#d45087', // pink
+            '#f95d6a', // coral
+            '#ff7c43', // orange
+            '#ffa600'  // amber
         ];
         
         this.initializeEventListeners();
@@ -330,11 +328,9 @@ class HabitTracker {
         card.innerHTML = `
             <div class="habit-header">
                 <div class="habit-name">${habit.name}</div>
-                <div class="habit-actions">
-                    <button class="action-btn edit-btn" data-habit-id="${habit.id}" title="Edit">
-                        Edit
-                    </button>
-                </div>
+                <button class="action-btn edit-btn" data-habit-id="${habit.id}" title="Edit">
+                    Edit
+                </button>
             </div>
             <div class="monthly-calendars" style="--habit-color: ${habit.color}">
                 ${this.generateMonthlyCalendars(habit)}
@@ -405,11 +401,12 @@ class HabitTracker {
             calendar += `<div class="day-header">${day}</div>`;
         });
         
-        // Generate calendar days
-        for (let i = 0; i < 42; i++) {
-            const currentDate = new Date(startDate);
-            currentDate.setDate(startDate.getDate() + i);
-            
+        // Generate calendar days - only generate necessary weeks
+        const endDate = new Date(lastDay);
+        endDate.setDate(lastDay.getDate() + (6 - lastDay.getDay()));
+        
+        let currentDate = new Date(startDate);
+        while (currentDate <= endDate) {
             const dateString = currentDate.toISOString().split('T')[0];
             const isCompleted = habit.completed_dates.includes(dateString);
             const isToday = dateString === today.toISOString().split('T')[0];
@@ -423,6 +420,8 @@ class HabitTracker {
             if (isOtherMonth) classes += ' other-month';
             
             calendar += `<div class="${classes}" data-date="${dateString}">${currentDate.getDate()}</div>`;
+            
+            currentDate.setDate(currentDate.getDate() + 1);
         }
         
         calendar += `

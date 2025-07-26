@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: #d6c3e4;
+    background: white;
     min-height: 100vh;
     color: #2D3748;
     line-height: 1.6;
@@ -408,11 +408,11 @@ section h2 {
 
 .habit-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
-    margin-bottom: 12px;
-    padding-bottom: 6px;
-    border-bottom: 1px solid #b3b4e6;
+    margin-bottom: 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #e2e8f0;
 }
 
 .habit-name {
@@ -448,9 +448,14 @@ section h2 {
 .monthly-calendars {
     display: flex;
     gap: 20px;
-    overflow-x: auto;
     padding: 4px 0;
     margin-bottom: 12px;
+}
+
+/* Global horizontal scroll container */
+.habits-container {
+    overflow-x: auto;
+    padding-bottom: 8px;
 }
 
 .month-calendar {
