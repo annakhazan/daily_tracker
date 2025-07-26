@@ -178,7 +178,7 @@ class HabitTracker {
                     return;
                 }
                 
-                let todayHTML = '<h3>Today\'s Tasks</h3>';
+                let todayHTML = '<h3>Today</h3>';
                 todayTasks.forEach(habit => {
                     const dailyTasks = habit.daily_tasks || {};
                     const todayTasks = dailyTasks[dayOfWeek] || [];
