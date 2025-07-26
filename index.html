@@ -9,133 +9,148 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>To Do</h1>
-        </header>
-
-        <div class="main-content">
-            <!-- Today's Tasks Section -->
-            <section class="today-tasks-section">
-                <div id="today-tasks" class="today-tasks">
-                    <!-- Today's tasks will be dynamically added here -->
-                </div>
-            </section>
-
-            <!-- Tasks Display Section -->
-            <section class="tasks-section">
-                <div id="tasks-container" class="tasks-container">
-                    <!-- Tasks will be dynamically added here -->
-                </div>
-            </section>
-
-            <!-- Add New Task Section -->
-            <section class="add-task-section">
-                <form id="task-form" class="task-form">
-                    <div class="form-group">
-                        <input type="text" id="task-name" placeholder="Add to list..." required>
-                        <button type="submit" class="btn-submit">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M5 12h14M12 5l7 7-7 7"/>
-                            </svg>
-                        </button>
-                    </div>
-                </form>
-            </section>
+    <!-- Password Protection Overlay -->
+    <div id="password-overlay" class="password-overlay">
+        <div class="password-container">
+            <h2>Enter Password</h2>
+            <form id="password-form" class="password-form">
+                <input type="password" id="password-input" placeholder="Enter password..." required>
+                <button type="submit" class="btn btn-primary">Unlock</button>
+            </form>
         </div>
     </div>
 
-    <!-- Modal for editing tasks -->
-    <div id="edit-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Edit Task</h2>
-            <form id="edit-form">
-                <div class="form-group">
-                    <label for="edit-task-name">Task Name</label>
-                    <input type="text" id="edit-task-name" required>
-                </div>
-                
-                <div class="daily-tasks-section">
-                    <h3>Daily Tasks</h3>
-                    <div class="days-container">
-                        <div class="day-tasks">
-                            <label>Monday</label>
-                            <div class="task-inputs" data-day="monday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+    <!-- Main App Content (hidden until password is entered) -->
+    <div id="main-app" class="main-app" style="display: none;">
+        <div class="container">
+            <header class="header">
+                <h1>To Do</h1>
+                <button id="logout-btn" class="logout-btn" title="Logout">Logout</button>
+            </header>
+
+            <div class="main-content">
+                <!-- Today's Tasks Section -->
+                <section class="today-tasks-section">
+                    <div id="today-tasks" class="today-tasks">
+                        <!-- Today's tasks will be dynamically added here -->
+                    </div>
+                </section>
+
+                <!-- Tasks Display Section -->
+                <section class="tasks-section">
+                    <div id="tasks-container" class="tasks-container">
+                        <!-- Tasks will be dynamically added here -->
+                    </div>
+                </section>
+
+                <!-- Add New Task Section -->
+                <section class="add-task-section">
+                    <form id="task-form" class="task-form">
+                        <div class="form-group">
+                            <input type="text" id="task-name" placeholder="Add to list..." required>
+                            <button type="submit" class="btn-submit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M5 12h14M12 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+            </div>
+        </div>
+
+        <!-- Modal for editing tasks -->
+        <div id="edit-modal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Edit Task</h2>
+                <form id="edit-form">
+                    <div class="form-group">
+                        <label for="edit-task-name">Task Name</label>
+                        <input type="text" id="edit-task-name" required>
+                    </div>
+                    
+                    <div class="daily-tasks-section">
+                        <h3>Daily Tasks</h3>
+                        <div class="days-container">
+                            <div class="day-tasks">
+                                <label>Monday</label>
+                                <div class="task-inputs" data-day="monday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="day-tasks">
-                            <label>Tuesday</label>
-                            <div class="task-inputs" data-day="tuesday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+                            
+                            <div class="day-tasks">
+                                <label>Tuesday</label>
+                                <div class="task-inputs" data-day="tuesday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="day-tasks">
-                            <label>Wednesday</label>
-                            <div class="task-inputs" data-day="wednesday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+                            
+                            <div class="day-tasks">
+                                <label>Wednesday</label>
+                                <div class="task-inputs" data-day="wednesday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="day-tasks">
-                            <label>Thursday</label>
-                            <div class="task-inputs" data-day="thursday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+                            
+                            <div class="day-tasks">
+                                <label>Thursday</label>
+                                <div class="task-inputs" data-day="thursday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="day-tasks">
-                            <label>Friday</label>
-                            <div class="task-inputs" data-day="friday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+                            
+                            <div class="day-tasks">
+                                <label>Friday</label>
+                                <div class="task-inputs" data-day="friday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="day-tasks">
-                            <label>Saturday</label>
-                            <div class="task-inputs" data-day="saturday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+                            
+                            <div class="day-tasks">
+                                <label>Saturday</label>
+                                <div class="task-inputs" data-day="saturday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        
-                        <div class="day-tasks">
-                            <label>Sunday</label>
-                            <div class="task-inputs" data-day="sunday">
-                                <div class="task-input-group">
-                                    <input type="text" placeholder="Add task..." class="task-input">
-                                    <button type="button" class="add-task-btn">+</button>
+                            
+                            <div class="day-tasks">
+                                <label>Sunday</label>
+                                <div class="task-inputs" data-day="sunday">
+                                    <div class="task-input-group">
+                                        <input type="text" placeholder="Add task..." class="task-input">
+                                        <button type="button" class="add-task-btn">+</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                
-                <div class="modal-buttons">
-                    <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" id="delete-task" class="btn btn-danger">Delete Task</button>
-                </div>
-            </form>
+                    
+                    <div class="modal-buttons">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" id="delete-task" class="btn btn-danger">Delete Task</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
     <script src="script.js?v=2"></script>

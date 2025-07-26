@@ -2,16 +2,28 @@ const SUPABASE_URL = 'https://ahlqtbmmvefgwjhbrcpj.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFobHF0Ym1tdmVmZ3dqaGJyY3BqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI0NDEwNjMsImV4cCI6MjA2ODAxNzA2M30.ebIpSg8WsdWTf-JDhTCkRRVYKfjOYryxKt9iGm0XsNw';
 const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Habit Tracker JavaScript - Minimalist Version
+// Task Tracker JavaScript - Minimalist Version
 
 class TaskTracker {
     constructor() {
+        // Password protection
+        this.password = 'your-password-here'; // Change this to your desired password
+        this.isAuthenticated = false;
+        
+        // Check if already authenticated
+        if (sessionStorage.getItem('taskTrackerAuthenticated') === 'true') {
+            this.isAuthenticated = true;
+            this.showApp();
+        } else {
+            this.showPasswordScreen();
+        }
+        
         // Clear localStorage to ensure new colors are applied
         // localStorage.removeItem('habits'); // Removed as per instructions
         
         // this.habits = JSON.parse(localStorage.getItem('habits')) || []; // Removed as per instructions
-        this.editingHabitId = null;
-        this.habitCounter = 0; // Track habit count for color assignment
+        this.editingTaskId = null;
+        this.habitCounter = 0; // Track task count for color assignment
         
         // New color palette
         this.colorPalette = [
@@ -30,7 +42,46 @@ class TaskTracker {
         this.renderTasks();
     }
 
+    showPasswordScreen() {
+        document.getElementById('password-overlay').style.display = 'flex';
+        document.getElementById('main-app').style.display = 'none';
+        document.getElementById('password-input').focus();
+    }
+
+    showApp() {
+        document.getElementById('password-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+    }
+
+    authenticate(password) {
+        if (password === this.password) {
+            this.isAuthenticated = true;
+            sessionStorage.setItem('taskTrackerAuthenticated', 'true');
+            this.showApp();
+            return true;
+        } else {
+            this.showNotification('Incorrect password', 'error');
+            return false;
+        }
+    }
+
+    logout() {
+        this.isAuthenticated = false;
+        sessionStorage.removeItem('taskTrackerAuthenticated');
+        this.showPasswordScreen();
+    }
+
     initializeEventListeners() {
+        // Password form submission
+        const passwordForm = document.getElementById('password-form');
+        passwordForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const password = document.getElementById('password-input').value;
+            if (this.authenticate(password)) {
+                document.getElementById('password-input').value = '';
+            }
+        });
+
         // Form submission for adding new tasks
         const taskForm = document.getElementById('task-form');
         taskForm.addEventListener('submit', (e) => {
@@ -62,6 +113,11 @@ class TaskTracker {
         // Delete task button
         document.getElementById('delete-task').addEventListener('click', () => {
             this.deleteTask();
+        });
+
+        // Logout button
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            this.logout();
         });
 
         // Task input functionality
