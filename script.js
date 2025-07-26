@@ -147,6 +147,8 @@ class HabitTracker {
         const today = new Date();
         const dayOfWeek = today.toLocaleDateString('en-US', { weekday: 'lowercase' });
         
+        console.log('Today is:', dayOfWeek);
+        
         // Get all habits and filter for today's tasks
         supabaseClient
             .from('habits')
@@ -157,14 +159,22 @@ class HabitTracker {
                     return;
                 }
                 
+                console.log('All habits:', habits);
+                
                 const todayTasks = habits.filter(habit => {
                     const dailyTasks = habit.daily_tasks || {};
                     const todayTasks = dailyTasks[dayOfWeek] || [];
+                    console.log(`Habit "${habit.name}" has ${todayTasks.length} tasks for ${dayOfWeek}:`, todayTasks);
                     return todayTasks.length > 0;
                 });
                 
+                console.log('Habits with tasks for today:', todayTasks);
+                
                 const todayContainer = document.getElementById('today-tasks');
-                if (!todayContainer) return;
+                if (!todayContainer) {
+                    console.error('Today tasks container not found!');
+                    return;
+                }
                 
                 if (todayTasks.length === 0) {
                     todayContainer.innerHTML = '<div class="empty-state"><p>No tasks scheduled for today.</p></div>';
