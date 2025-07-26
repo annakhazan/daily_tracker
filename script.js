@@ -25,6 +25,7 @@ class HabitTracker {
         ];
         
         this.initializeEventListeners();
+        this.updateExistingHabitColors(); // Update colors for existing habits
         this.renderHabits();
     }
 
@@ -122,6 +123,7 @@ class HabitTracker {
         };
         
         console.log('Attempting to insert habit:', habit);
+        console.log('Using color:', randomColor);
         
         // Insert into Supabase
         const { data, error } = await supabaseClient
@@ -139,6 +141,37 @@ class HabitTracker {
         this.renderTodayTasks();
         nameInput.value = '';
         this.showNotification('Habit added successfully!', 'success');
+    }
+
+    async updateExistingHabitColors() {
+        console.log('Updating existing habit colors...');
+        
+        const { data: habits, error } = await supabaseClient
+            .from('habits')
+            .select('*');
+            
+        if (error) {
+            console.error('Error fetching habits for color update:', error);
+            return;
+        }
+        
+        for (const habit of habits) {
+            // Check if habit has old color palette
+            const oldColors = ['#e78ab6', '#f4a6c1', '#fbc6e2', '#f7d1ea', '#ffc3b1', '#ffd6c3', '#ffe3d3', '#b6a6f8', '#a6a1f7', '#8883e6'];
+            if (oldColors.includes(habit.color)) {
+                const newColor = this.colorPalette[Math.floor(Math.random() * this.colorPalette.length)];
+                console.log(`Updating habit "${habit.name}" from ${habit.color} to ${newColor}`);
+                
+                await supabaseClient
+                    .from('habits')
+                    .update({ color: newColor })
+                    .eq('id', habit.id);
+            }
+        }
+        
+        console.log('Color update complete');
+        this.renderHabits();
+        this.renderTodayTasks();
     }
 
     renderTodayTasks() {
@@ -182,6 +215,8 @@ class HabitTracker {
                     const todayTasks = dailyTasks[dayOfWeek] || [];
                     const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
                     const isCompleted = habit.completed_dates && habit.completed_dates.includes(today);
+                    
+                    console.log(`Habit "${habit.name}" using color: ${habit.color}`);
                     
                     todayHTML += `
                         <div class="today-task ${isCompleted ? 'completed' : ''}" style="--habit-color: ${habit.color}" data-habit-id="${habit.id}" data-date="${today}">
