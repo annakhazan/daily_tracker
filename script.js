@@ -182,7 +182,7 @@ class HabitTracker {
                 todayTasks.forEach(habit => {
                     const dailyTasks = habit.daily_tasks || {};
                     const todayTasks = dailyTasks[dayOfWeek] || [];
-                    const today = new Date().toISOString().split('T')[0];
+                    const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
                     const isCompleted = habit.completed_dates && habit.completed_dates.includes(today);
                     
                     todayHTML += `
@@ -480,7 +480,7 @@ class HabitTracker {
         }
         
         // Also update the checkbox in Today's Tasks if it's today's date
-        const today = new Date().toISOString().split('T')[0];
+        const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
         if (dateString === today) {
             const todayCheckbox = document.querySelector(`input[data-habit-id="${habitId}"][data-date="${today}"]`);
             if (todayCheckbox) {
