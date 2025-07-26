@@ -22,18 +22,18 @@
                 </div>
             </section>
 
-            <!-- Habits Display Section -->
-            <section class="habits-section">
-                <div id="habits-container" class="habits-container">
-                    <!-- Habits will be dynamically added here -->
+            <!-- Tasks Display Section -->
+            <section class="tasks-section">
+                <div id="tasks-container" class="tasks-container">
+                    <!-- Tasks will be dynamically added here -->
                 </div>
             </section>
 
-            <!-- Add New Habit Section -->
-            <section class="add-habit-section">
-                <form id="habit-form" class="habit-form">
+            <!-- Add New Task Section -->
+            <section class="add-task-section">
+                <form id="task-form" class="task-form">
                     <div class="form-group">
-                        <input type="text" id="habit-name" placeholder="Add to list..." required>
+                        <input type="text" id="task-name" placeholder="Add to list..." required>
                         <button type="submit" class="btn-submit">
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -45,15 +45,15 @@
         </div>
     </div>
 
-    <!-- Modal for editing habits -->
+    <!-- Modal for editing tasks -->
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
-            <h2>Edit Habit</h2>
+            <h2>Edit Task</h2>
             <form id="edit-form">
                 <div class="form-group">
-                    <label for="edit-habit-name">Habit Name</label>
-                    <input type="text" id="edit-habit-name" required>
+                    <label for="edit-task-name">Task Name</label>
+                    <input type="text" id="edit-task-name" required>
                 </div>
                 
                 <div class="daily-tasks-section">
@@ -133,7 +133,7 @@
                 
                 <div class="modal-buttons">
                     <button type="submit" class="btn btn-primary">Save Changes</button>
-                    <button type="button" id="delete-habit" class="btn btn-danger">Delete Habit</button>
+                    <button type="button" id="delete-task" class="btn btn-danger">Delete Task</button>
                 </div>
             </form>
         </div>

@@ -4,7 +4,7 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
 
 // Habit Tracker JavaScript - Minimalist Version
 
-class HabitTracker {
+class TaskTracker {
     constructor() {
         // Clear localStorage to ensure new colors are applied
         // localStorage.removeItem('habits'); // Removed as per instructions
@@ -26,16 +26,16 @@ class HabitTracker {
         ];
         
         this.initializeEventListeners();
-        this.updateExistingHabitColors(); // Update colors for existing habits
-        this.renderHabits();
+        this.updateExistingTaskColors(); // Update colors for existing tasks
+        this.renderTasks();
     }
 
     initializeEventListeners() {
-        // Form submission for adding new habits
-        const habitForm = document.getElementById('habit-form');
-        habitForm.addEventListener('submit', (e) => {
+        // Form submission for adding new tasks
+        const taskForm = document.getElementById('task-form');
+        taskForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.addHabit();
+            this.addTask();
         });
 
         // Modal functionality
@@ -56,12 +56,12 @@ class HabitTracker {
         const editForm = document.getElementById('edit-form');
         editForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            this.saveHabitEdit();
+            this.saveTaskEdit();
         });
 
-        // Delete habit button
-        document.getElementById('delete-habit').addEventListener('click', () => {
-            this.deleteHabit();
+        // Delete task button
+        document.getElementById('delete-task').addEventListener('click', () => {
+            this.deleteTask();
         });
 
         // Task input functionality
@@ -100,16 +100,16 @@ class HabitTracker {
         });
     }
 
-    async addHabit() {
-        const nameInput = document.getElementById('habit-name');
-        const habitName = nameInput.value.trim();
+    async addTask() {
+        const nameInput = document.getElementById('task-name');
+        const taskName = nameInput.value.trim();
         
-        if (!habitName) return;
+        if (!taskName) return;
         
         const colorIndex = this.habitCounter % this.colorPalette.length;
         const color = this.colorPalette[colorIndex];
-        const habit = {
-            name: habitName,
+        const task = {
+            name: taskName,
             color: color,
             completed_dates: [],
             daily_tasks: {
@@ -124,56 +124,56 @@ class HabitTracker {
             created_at: new Date().toISOString()
         };
         
-        console.log('Attempting to insert habit:', habit);
+        console.log('Attempting to insert task:', task);
         console.log('Using color:', color);
         
         // Insert into Supabase
         const { data, error } = await supabaseClient
             .from('habits')
-            .insert([habit]);
+            .insert([task]);
             
         if (error) {
             console.error('Supabase error:', error);
-            alert('Error adding habit: ' + JSON.stringify(error, null, 2));
+            alert('Error adding task: ' + JSON.stringify(error, null, 2));
             return;
         }
         
-        console.log('Successfully inserted habit:', data);
+        console.log('Successfully inserted task:', data);
         this.habitCounter++;
-        this.renderHabits();
+        this.renderTasks();
         this.renderTodayTasks();
         nameInput.value = '';
-        this.showNotification('Habit added successfully!', 'success');
+        this.showNotification('Task added successfully!', 'success');
     }
 
-    async updateExistingHabitColors() {
-        console.log('Updating existing habit colors...');
+    async updateExistingTaskColors() {
+        console.log('Updating existing task colors...');
         
-        const { data: habits, error } = await supabaseClient
+        const { data: tasks, error } = await supabaseClient
             .from('habits')
             .select('*');
             
         if (error) {
-            console.error('Error fetching habits for color update:', error);
+            console.error('Error fetching tasks for color update:', error);
             return;
         }
         
-        for (const habit of habits) {
-            // Check if habit has old color palette
+        for (const task of tasks) {
+            // Check if task has old color palette
             const oldColors = ['#e78ab6', '#f4a6c1', '#fbc6e2', '#f7d1ea', '#ffc3b1', '#ffd6c3', '#ffe3d3', '#b6a6f8', '#a6a1f7', '#8883e6'];
-            if (oldColors.includes(habit.color)) {
+            if (oldColors.includes(task.color)) {
                 const newColor = this.colorPalette[Math.floor(Math.random() * this.colorPalette.length)];
-                console.log(`Updating habit "${habit.name}" from ${habit.color} to ${newColor}`);
+                console.log(`Updating task "${task.name}" from ${task.color} to ${newColor}`);
                 
                 await supabaseClient
                     .from('habits')
                     .update({ color: newColor })
-                    .eq('id', habit.id);
+                    .eq('id', task.id);
             }
         }
         
         console.log('Color update complete');
-        this.renderHabits();
+        this.renderTasks();
         this.renderTodayTasks();
     }
 
@@ -183,23 +183,23 @@ class HabitTracker {
         
         console.log('Today is:', dayOfWeek);
         
-        // Get all habits and filter for today's tasks
+        // Get all tasks and filter for today's tasks
         supabaseClient
             .from('habits')
             .select('*')
-            .then(({ data: habits, error }) => {
+            .then(({ data: tasks, error }) => {
                 if (error) {
-                    console.error('Error fetching habits for today:', error);
+                    console.error('Error fetching tasks for today:', error);
                     return;
                 }
                 
-                console.log('All habits:', habits);
+                console.log('All tasks:', tasks);
                 
-                // Show all habits in Today's Tasks, regardless of whether they have specific daily tasks
-                const todayTasks = habits;
-                console.log(`Showing ${todayTasks.length} habits in Today's Tasks`);
+                // Show all tasks in Today's Tasks, regardless of whether they have specific daily tasks
+                const todayTasks = tasks;
+                console.log(`Showing ${todayTasks.length} tasks in Today's Tasks`);
                 
-                console.log('Habits with tasks for today:', todayTasks);
+                console.log('Tasks with tasks for today:', todayTasks);
                 
                 const todayContainer = document.getElementById('today-tasks');
                 if (!todayContainer) {
@@ -213,22 +213,22 @@ class HabitTracker {
                 }
                 
                 let todayHTML = '<h3>Today</h3>';
-                todayTasks.forEach(habit => {
-                    const dailyTasks = habit.daily_tasks || {};
+                todayTasks.forEach(task => {
+                    const dailyTasks = task.daily_tasks || {};
                     const todayTasks = dailyTasks[dayOfWeek] || [];
                     const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
-                    const isCompleted = habit.completed_dates && habit.completed_dates.includes(today);
+                    const isCompleted = task.completed_dates && task.completed_dates.includes(today);
                     
-                    console.log(`Habit "${habit.name}" using color: ${habit.color}`);
+                    console.log(`Task "${task.name}" using color: ${task.color}`);
                     
                     todayHTML += `
-                        <div class="today-task ${isCompleted ? 'completed' : ''}" style="--habit-color: ${habit.color}" data-habit-id="${habit.id}" data-date="${today}">
+                        <div class="today-task ${isCompleted ? 'completed' : ''}" style="--habit-color: ${task.color}" data-task-id="${task.id}" data-date="${today}">
                             <div class="task-header">
-                                <div class="task-name">${habit.name}</div>
+                                <div class="task-name">${task.name}</div>
                                 <div class="task-status">
                                     ${isCompleted ? '<span class="completion-checkmark">✓</span>' : ''}
                                     <label class="task-checkbox">
-                                        <input type="checkbox" ${isCompleted ? 'checked' : ''} data-habit-id="${habit.id}" data-date="${today}">
+                                        <input type="checkbox" ${isCompleted ? 'checked' : ''} data-task-id="${task.id}" data-date="${today}">
                                     </label>
                                 </div>
                             </div>
@@ -249,22 +249,22 @@ class HabitTracker {
                 console.log(`Found ${checkboxes.length} checkboxes to add listeners to`);
                 
                 checkboxes.forEach(checkbox => {
-                    console.log('Adding listener to checkbox:', checkbox.dataset.habitId);
+                    console.log('Adding listener to checkbox:', checkbox.dataset.taskId);
                     checkbox.addEventListener('change', (e) => {
                         console.log('Checkbox clicked!', e.target.checked);
-                        const habitId = e.target.dataset.habitId;
+                        const taskId = e.target.dataset.taskId;
                         const date = e.target.dataset.date;
                         const isChecked = e.target.checked;
                         
-                        console.log('Habit ID:', habitId, 'Date:', date, 'Checked:', isChecked);
+                        console.log('Task ID:', taskId, 'Date:', date, 'Checked:', isChecked);
                         
-                        this.toggleHabitCompletion(habitId, date);
+                        this.toggleTaskCompletion(taskId, date);
                         
                         // Update the visual state of the calendar cell
-                        const habitCards = document.querySelectorAll('.habit-card');
-                        for (const card of habitCards) {
+                        const taskCards = document.querySelectorAll('.task-card');
+                        for (const card of taskCards) {
                             const editBtn = card.querySelector('.edit-btn');
-                            if (editBtn && editBtn.dataset.habitId === habitId) {
+                            if (editBtn && editBtn.dataset.taskId === taskId) {
                                 const calendarCell = card.querySelector(`.day-cell[data-date="${date}"]`);
                                 if (calendarCell) {
                                     if (isChecked) {
@@ -308,12 +308,12 @@ class HabitTracker {
                         // Don't trigger if clicking on the checkbox itself
                         if (e.target.closest('.task-checkbox')) return;
                         
-                        const habitId = taskItem.dataset.habitId;
+                        const taskId = taskItem.dataset.taskId;
                         const date = taskItem.dataset.date;
                         const checkbox = taskItem.querySelector('input[type="checkbox"]');
                         const isCurrentlyChecked = checkbox.checked;
                         
-                        console.log('Task item clicked!', habitId, date, 'Currently checked:', isCurrentlyChecked);
+                        console.log('Task item clicked!', taskId, date, 'Currently checked:', isCurrentlyChecked);
                         
                         // Toggle the checkbox
                         checkbox.checked = !isCurrentlyChecked;
@@ -325,62 +325,62 @@ class HabitTracker {
             });
     }
 
-    async renderHabits() {
-        const container = document.getElementById('habits-container');
+    async renderTasks() {
+        const container = document.getElementById('tasks-container');
         container.innerHTML = '';
         
-        console.log('Attempting to fetch habits from Supabase...');
+        console.log('Attempting to fetch tasks from Supabase...');
         
-        const { data: habits, error } = await supabaseClient
+        const { data: tasks, error } = await supabaseClient
             .from('habits')
             .select('*');
             
         if (error) {
-            console.error('Error fetching habits:', error);
-            container.innerHTML = '<div class="empty-state"><p>Error loading habits: ' + error.message + '</p></div>';
+            console.error('Error fetching tasks:', error);
+            container.innerHTML = '<div class="empty-state"><p>Error loading tasks: ' + error.message + '</p></div>';
             return;
         }
         
-        console.log('Successfully fetched habits:', habits);
-        if (!habits.length) {
-            container.innerHTML = '<div class="empty-state"><p>No habits yet. Add your first habit to get started!</p></div>';
+        console.log('Successfully fetched tasks:', tasks);
+        if (!tasks.length) {
+            container.innerHTML = '<div class="empty-state"><p>No tasks yet. Add your first task to get started!</p></div>';
             return;
         }
         
-        // Sort habits by creation date (oldest first)
-        habits.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        // Sort tasks by creation date (oldest first)
+        tasks.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
         
-        // Set the counter to the number of existing habits
-        this.habitCounter = habits.length;
+        // Set the counter to the number of existing tasks
+        this.habitCounter = tasks.length;
         
-        habits.forEach(habit => {
-            const habitCard = this.createHabitCard(habit);
-            container.appendChild(habitCard);
+        tasks.forEach(task => {
+            const taskCard = this.createTaskCard(task);
+            container.appendChild(taskCard);
         });
         
         // Also render today's tasks
         this.renderTodayTasks();
     }
 
-    createHabitCard(habit) {
+    createTaskCard(task) {
         const card = document.createElement('div');
-        card.className = 'habit-card';
+        card.className = 'task-card';
 
         card.innerHTML = `
-            <div class="habit-header">
-                <div class="habit-name">${habit.name}</div>
-                <button class="action-btn edit-btn" data-habit-id="${habit.id}" title="Edit">
+            <div class="task-header">
+                <div class="task-name">${task.name}</div>
+                <button class="action-btn edit-btn" data-task-id="${task.id}" title="Edit">
                     Edit
                 </button>
             </div>
-            <div class="monthly-calendars" style="--habit-color: ${habit.color}">
-                ${this.generateMonthlyCalendars(habit)}
+            <div class="monthly-calendars" style="--habit-color: ${task.color}">
+                ${this.generateMonthlyCalendars(task)}
             </div>
         `;
 
         // Add event listeners
         card.querySelector('.edit-btn').addEventListener('click', () => {
-            this.openEditModal(habit);
+            this.openEditModal(task);
         });
 
         // Add click listeners to day cells
@@ -388,22 +388,22 @@ class HabitTracker {
         dayCells.forEach(cell => {
             cell.addEventListener('click', () => {
                 const dateString = cell.dataset.date;
-                this.toggleHabitCompletion(habit.id, dateString);
+                this.toggleTaskCompletion(task.id, dateString);
             });
         });
 
         return card;
     }
 
-    generateMonthlyCalendars(habit) {
+    generateMonthlyCalendars(task) {
         const today = new Date();
         const currentMonth = today.getMonth();
         const currentYear = today.getFullYear();
         
         let calendars = '';
         
-        // Generate calendars for the preceding 3 months plus current week
-        for (let i = 3; i >= 0; i--) {
+        // Generate calendars for the preceding 2 months plus current month
+        for (let i = 2; i >= 0; i--) {
             const targetMonth = currentMonth - i;
             const targetYear = currentYear;
             
@@ -415,13 +415,13 @@ class HabitTracker {
                 year = targetYear - 1;
             }
             
-            calendars += this.generateMonthCalendar(habit, year, month, today);
+            calendars += this.generateMonthCalendar(task, year, month, today);
         }
         
         return calendars;
     }
 
-    generateMonthCalendar(habit, year, month, today) {
+    generateMonthCalendar(task, year, month, today) {
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
         const startDate = new Date(firstDay);
@@ -452,7 +452,7 @@ class HabitTracker {
         let currentDate = new Date(startDate);
         while (currentDate <= endDate) {
             const dateString = currentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format in local time
-            const isCompleted = habit.completed_dates.includes(dateString);
+            const isCompleted = task.completed_dates.includes(dateString);
             const isToday = dateString === todayString;
             const isFuture = dateString > todayString;
             const isOtherMonth = currentDate.getMonth() !== month;
@@ -478,16 +478,16 @@ class HabitTracker {
         return calendar;
     }
 
-    async toggleHabitCompletion(habitId, dateString) {
-        // Fetch the habit
-        const { data: habits } = await supabaseClient
+    async toggleTaskCompletion(taskId, dateString) {
+        // Fetch the task
+        const { data: tasks } = await supabaseClient
             .from('habits')
             .select('*')
-            .eq('id', habitId);
-        const habit = habits[0];
-        if (!habit) return;
+            .eq('id', taskId);
+        const task = tasks[0];
+        if (!task) return;
 
-        let completed_dates = habit.completed_dates || [];
+        let completed_dates = task.completed_dates || [];
         const isCompleted = completed_dates.includes(dateString);
 
         if (isCompleted) {
@@ -500,16 +500,16 @@ class HabitTracker {
         await supabaseClient
             .from('habits')
             .update({ completed_dates })
-            .eq('id', habitId);
+            .eq('id', taskId);
 
         // Update only the visual state of the clicked date
-        // Find the habit card that contains the clicked cell
-        const habitCards = document.querySelectorAll('.habit-card');
+        // Find the task card that contains the clicked cell
+        const taskCards = document.querySelectorAll('.task-card');
         let clickedCell = null;
         
-        for (const card of habitCards) {
+        for (const card of taskCards) {
             const editBtn = card.querySelector('.edit-btn');
-            if (editBtn && editBtn.dataset.habitId === habitId) {
+            if (editBtn && editBtn.dataset.taskId === taskId) {
                 clickedCell = card.querySelector(`.day-cell[data-date="${dateString}"]`);
                 break;
             }
@@ -526,20 +526,20 @@ class HabitTracker {
         // Also update the checkbox in Today's Tasks if it's today's date
         const today = new Date().toLocaleDateString('en-CA'); // YYYY-MM-DD format
         if (dateString === today) {
-            const todayCheckbox = document.querySelector(`input[data-habit-id="${habitId}"][data-date="${today}"]`);
+            const todayCheckbox = document.querySelector(`input[data-task-id="${taskId}"][data-date="${today}"]`);
             if (todayCheckbox) {
                 todayCheckbox.checked = !isCompleted;
             }
         }
     }
 
-    openEditModal(habit) {
-        this.editingHabitId = habit.id;
+    openEditModal(task) {
+        this.editingTaskId = task.id;
         
-        document.getElementById('edit-habit-name').value = habit.name;
+        document.getElementById('edit-task-name').value = task.name;
         
         // Populate daily tasks
-        const dailyTasks = habit.daily_tasks || {};
+        const dailyTasks = task.daily_tasks || {};
         const days = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
         
         days.forEach(day => {
@@ -576,11 +576,11 @@ class HabitTracker {
         container.appendChild(taskItem);
     }
 
-    async saveHabitEdit() {
-        if (!this.editingHabitId) return;
+    async saveTaskEdit() {
+        if (!this.editingTaskId) return;
         
-        const habitName = document.getElementById('edit-habit-name').value.trim();
-        if (!habitName) return;
+        const taskName = document.getElementById('edit-task-name').value.trim();
+        if (!taskName) return;
         
         // Collect daily tasks
         const dailyTasks = {};
@@ -604,34 +604,34 @@ class HabitTracker {
         const { error } = await supabaseClient
             .from('habits')
             .update({
-                name: habitName,
+                name: taskName,
                 daily_tasks: dailyTasks
             })
-            .eq('id', this.editingHabitId);
+            .eq('id', this.editingTaskId);
             
         if (error) {
-            console.error('Error updating habit:', error);
-            alert('Error updating habit: ' + error.message);
+            console.error('Error updating task:', error);
+            alert('Error updating task: ' + error.message);
             return;
         }
         
-        this.renderHabits();
+        this.renderTasks();
         this.renderTodayTasks();
         document.getElementById('edit-modal').style.display = 'none';
-        this.editingHabitId = null;
-        this.showNotification('Habit updated successfully!', 'success');
+        this.editingTaskId = null;
+        this.showNotification('Task updated successfully!', 'success');
     }
 
-    async deleteHabit() {
-        if (!this.editingHabitId) return;
+    async deleteTask() {
+        if (!this.editingTaskId) return;
         await supabaseClient
             .from('habits')
             .delete()
-            .eq('id', this.editingHabitId);
-        this.renderHabits();
+            .eq('id', this.editingTaskId);
+        this.renderTasks();
         document.getElementById('edit-modal').style.display = 'none';
-        this.editingHabitId = null;
-        this.showNotification('Habit deleted successfully!', 'success');
+        this.editingTaskId = null;
+        this.showNotification('Task deleted successfully!', 'success');
     }
 
     // saveHabits() { // Removed as per instructions
@@ -699,9 +699,9 @@ class HabitTracker {
     }
 }
 
-// Initialize the habit tracker when the page loads
+// Initialize the task tracker when the page loads
 document.addEventListener('DOMContentLoaded', () => {
-    new HabitTracker();
+    new TaskTracker();
 });
 
 // Add some sample data for demonstration (optional)
