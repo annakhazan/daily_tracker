@@ -11,6 +11,7 @@ class HabitTracker {
         
         // this.habits = JSON.parse(localStorage.getItem('habits')) || []; // Removed as per instructions
         this.editingHabitId = null;
+        this.habitCounter = 0; // Track habit count for color assignment
         
         // New color palette
         this.colorPalette = [
@@ -105,7 +106,8 @@ class HabitTracker {
         
         if (!habitName) return;
         
-        const randomColor = this.colorPalette[Math.floor(Math.random() * this.colorPalette.length)];
+        const colorIndex = this.habitCounter % this.colorPalette.length;
+        const color = this.colorPalette[colorIndex];
         const habit = {
             name: habitName,
             color: randomColor,
@@ -137,6 +139,7 @@ class HabitTracker {
         }
         
         console.log('Successfully inserted habit:', data);
+        this.habitCounter++;
         this.renderHabits();
         this.renderTodayTasks();
         nameInput.value = '';
@@ -346,6 +349,9 @@ class HabitTracker {
         
         // Sort habits by creation date (oldest first)
         habits.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        
+        // Set the counter to the number of existing habits
+        this.habitCounter = habits.length;
         
         habits.forEach(habit => {
             const habitCard = this.createHabitCard(habit);
