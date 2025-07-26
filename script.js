@@ -432,7 +432,6 @@ class HabitTracker {
         
         // Get today's date string once to ensure consistency
         const todayString = today.toLocaleDateString('en-CA');
-        console.log('Today string:', todayString);
         
         let calendar = `
             <div class="month-calendar">
@@ -458,10 +457,7 @@ class HabitTracker {
             const isFuture = dateString > todayString;
             const isOtherMonth = currentDate.getMonth() !== month;
             
-            // Debug logging for July 25 and 26
-            if (dateString === '2025-07-25' || dateString === '2025-07-26') {
-                console.log(`Date: ${dateString}, isToday: ${isToday}, isFuture: ${isFuture}`);
-            }
+
             
             let classes = 'day-cell';
             if (isCompleted) classes += ' completed';

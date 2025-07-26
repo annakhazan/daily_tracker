@@ -546,13 +546,10 @@ section h2 {
 }
 
 .day-cell.future {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
-    color: #b3b4e6;
-}
-
-.day-cell.future:hover {
-    background: #d6d7f2;
+    color: #9ca3af;
+    background: #f3f4f6;
 }
 
 /* Empty state */
