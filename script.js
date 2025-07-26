@@ -74,14 +74,21 @@ class HabitTracker {
             completed_dates: [],
             created_at: new Date().toISOString()
         };
+        
+        console.log('Attempting to insert habit:', habit);
+        
         // Insert into Supabase
-        const { error } = await supabaseClient
+        const { data, error } = await supabaseClient
             .from('habits')
             .insert([habit]);
+            
         if (error) {
-            alert('Error adding habit: ' + error.message);
+            console.error('Supabase error:', error);
+            alert('Error adding habit: ' + JSON.stringify(error, null, 2));
             return;
         }
+        
+        console.log('Successfully inserted habit:', data);
         this.renderHabits();
         nameInput.value = '';
         this.showNotification('Habit added successfully!', 'success');
@@ -90,13 +97,20 @@ class HabitTracker {
     async renderHabits() {
         const container = document.getElementById('habits-container');
         container.innerHTML = '';
+        
+        console.log('Attempting to fetch habits from Supabase...');
+        
         const { data: habits, error } = await supabaseClient
             .from('habits')
             .select('*');
+            
         if (error) {
-            container.innerHTML = '<div class="empty-state"><p>Error loading habits.</p></div>';
+            console.error('Error fetching habits:', error);
+            container.innerHTML = '<div class="empty-state"><p>Error loading habits: ' + error.message + '</p></div>';
             return;
         }
+        
+        console.log('Successfully fetched habits:', habits);
         if (!habits.length) {
             container.innerHTML = '<div class="empty-state"><p>No habits yet. Add your first habit to get started!</p></div>';
             return;
