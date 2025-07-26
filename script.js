@@ -27,6 +27,7 @@ class HabitTracker {
         ];
         
         this.initializeEventListeners();
+        this.testSupabaseConnection();
         this.renderHabits();
     }
 
@@ -334,6 +335,29 @@ class HabitTracker {
                 document.body.removeChild(notification);
             }, 300);
         }, 3000);
+    }
+
+    async testSupabaseConnection() {
+        console.log('Testing Supabase connection...');
+        console.log('URL:', SUPABASE_URL);
+        console.log('Key:', SUPABASE_ANON_KEY.substring(0, 20) + '...');
+        
+        try {
+            const { data, error } = await supabaseClient
+                .from('habits')
+                .select('count')
+                .limit(1);
+                
+            if (error) {
+                console.error('Supabase connection test failed:', error);
+                alert('Supabase connection failed: ' + error.message);
+            } else {
+                console.log('Supabase connection successful!');
+            }
+        } catch (err) {
+            console.error('Network error:', err);
+            alert('Network error connecting to Supabase: ' + err.message);
+        }
     }
 }
 
