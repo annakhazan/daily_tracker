@@ -186,7 +186,7 @@ class HabitTracker {
                     const isCompleted = habit.completed_dates && habit.completed_dates.includes(today);
                     
                     todayHTML += `
-                        <div class="today-task" style="--habit-color: ${habit.color}">
+                        <div class="today-task" style="--habit-color: ${habit.color}" data-habit-id="${habit.id}" data-date="${today}">
                             <div class="task-header">
                                 <div class="task-name">${habit.name}</div>
                                 <label class="task-checkbox">
@@ -208,11 +208,17 @@ class HabitTracker {
                 
                 // Add event listeners to checkboxes
                 const checkboxes = todayContainer.querySelectorAll('input[type="checkbox"]');
+                console.log(`Found ${checkboxes.length} checkboxes to add listeners to`);
+                
                 checkboxes.forEach(checkbox => {
+                    console.log('Adding listener to checkbox:', checkbox.dataset.habitId);
                     checkbox.addEventListener('change', (e) => {
+                        console.log('Checkbox clicked!', e.target.checked);
                         const habitId = e.target.dataset.habitId;
                         const date = e.target.dataset.date;
                         const isChecked = e.target.checked;
+                        
+                        console.log('Habit ID:', habitId, 'Date:', date, 'Checked:', isChecked);
                         
                         this.toggleHabitCompletion(habitId, date);
                         
@@ -228,10 +234,33 @@ class HabitTracker {
                                     } else {
                                         calendarCell.classList.remove('completed');
                                     }
+                                    console.log('Updated calendar cell');
                                 }
                                 break;
                             }
                         }
+                    });
+                });
+                
+                // Add click handlers to the entire task items
+                const taskItems = todayContainer.querySelectorAll('.today-task');
+                taskItems.forEach(taskItem => {
+                    taskItem.addEventListener('click', (e) => {
+                        // Don't trigger if clicking on the checkbox itself
+                        if (e.target.closest('.task-checkbox')) return;
+                        
+                        const habitId = taskItem.dataset.habitId;
+                        const date = taskItem.dataset.date;
+                        const checkbox = taskItem.querySelector('input[type="checkbox"]');
+                        const isCurrentlyChecked = checkbox.checked;
+                        
+                        console.log('Task item clicked!', habitId, date, 'Currently checked:', isCurrentlyChecked);
+                        
+                        // Toggle the checkbox
+                        checkbox.checked = !isCurrentlyChecked;
+                        
+                        // Trigger the change event
+                        checkbox.dispatchEvent(new Event('change'));
                     });
                 });
             });
