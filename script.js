@@ -203,7 +203,6 @@ class TaskTracker {
         this.renderTasks();
         this.renderTodayTasks();
         nameInput.value = '';
-        this.showNotification('Task added successfully!', 'success');
     }
 
     async updateExistingTaskColors() {
@@ -693,7 +692,6 @@ class TaskTracker {
         this.renderTodayTasks();
         document.getElementById('edit-modal').style.display = 'none';
         this.editingTaskId = null;
-        this.showNotification('Task updated successfully!', 'success');
     }
 
     async deleteTask() {
@@ -705,7 +703,6 @@ class TaskTracker {
         this.renderTasks();
         document.getElementById('edit-modal').style.display = 'none';
         this.editingTaskId = null;
-        this.showNotification('Task deleted successfully!', 'success');
     }
 
     // saveHabits() { // Removed as per instructions
