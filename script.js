@@ -430,6 +430,10 @@ class HabitTracker {
         const monthName = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
         const isCurrentMonth = year === today.getFullYear() && month === today.getMonth();
         
+        // Get today's date string once to ensure consistency
+        const todayString = today.toLocaleDateString('en-CA');
+        console.log('Today string:', todayString);
+        
         let calendar = `
             <div class="month-calendar">
                 <div class="month-header">${monthName}</div>
@@ -450,9 +454,14 @@ class HabitTracker {
         while (currentDate <= endDate) {
             const dateString = currentDate.toLocaleDateString('en-CA'); // YYYY-MM-DD format in local time
             const isCompleted = habit.completed_dates.includes(dateString);
-            const isToday = dateString === today.toLocaleDateString('en-CA');
-            const isFuture = dateString > today.toLocaleDateString('en-CA');
+            const isToday = dateString === todayString;
+            const isFuture = dateString > todayString;
             const isOtherMonth = currentDate.getMonth() !== month;
+            
+            // Debug logging for July 25 and 26
+            if (dateString === '2025-07-25' || dateString === '2025-07-26') {
+                console.log(`Date: ${dateString}, isToday: ${isToday}, isFuture: ${isFuture}`);
+            }
             
             let classes = 'day-cell';
             if (isCompleted) classes += ' completed';
