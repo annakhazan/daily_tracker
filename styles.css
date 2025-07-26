@@ -159,41 +159,7 @@ body {
     display: none; /* Hide the default checkbox completely */
 }
 
-.checkmark {
-    height: 20px;
-    width: 20px;
-    background-color: white;
-    border: 2px solid var(--habit-color, #e78ab6);
-    border-radius: 4px;
-    position: relative;
-    transition: all 0.2s ease;
-}
-
-.task-checkbox:hover input ~ .checkmark {
-    background-color: #f8f9fa;
-}
-
-.task-checkbox input:checked ~ .checkmark {
-    background-color: var(--habit-color, #e78ab6);
-    border-color: var(--habit-color, #e78ab6);
-}
-
-.checkmark:after {
-    content: "";
-    position: absolute;
-    display: none;
-    left: 6px;
-    top: 2px;
-    width: 4px;
-    height: 8px;
-    border: solid white;
-    border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-}
-
-.task-checkbox input:checked ~ .checkmark:after {
-    display: block;
-}
+/* Removed custom checkmark styles since we're only using the completion checkmark */
 
 /* Task Editing Styles */
 .daily-tasks-section {

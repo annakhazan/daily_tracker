@@ -193,7 +193,6 @@ class HabitTracker {
                                     ${isCompleted ? '<span class="completion-checkmark">✓</span>' : ''}
                                     <label class="task-checkbox">
                                         <input type="checkbox" ${isCompleted ? 'checked' : ''} data-habit-id="${habit.id}" data-date="${today}">
-                                        <span class="checkmark"></span>
                                     </label>
                                 </div>
                             </div>
