@@ -27,7 +27,6 @@ class HabitTracker {
         ];
         
         this.initializeEventListeners();
-        this.testSupabaseConnection();
         this.renderHabits();
     }
 
@@ -116,6 +115,10 @@ class HabitTracker {
             container.innerHTML = '<div class="empty-state"><p>No habits yet. Add your first habit to get started!</p></div>';
             return;
         }
+        
+        // Sort habits by creation date (oldest first)
+        habits.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+        
         habits.forEach(habit => {
             const habitCard = this.createHabitCard(habit);
             container.appendChild(habitCard);
