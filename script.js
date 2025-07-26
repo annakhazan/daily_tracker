@@ -362,9 +362,23 @@ class TaskTracker {
         this.renderTodayTasks();
     }
 
+    hexToRgb(hex) {
+        // Remove the # if present
+        hex = hex.replace('#', '');
+        
+        // Parse the hex values
+        const r = parseInt(hex.substr(0, 2), 16);
+        const g = parseInt(hex.substr(2, 2), 16);
+        const b = parseInt(hex.substr(4, 2), 16);
+        
+        return `${r}, ${g}, ${b}`;
+    }
+
     createTaskCard(task) {
         const card = document.createElement('div');
         card.className = 'task-card';
+        
+        const rgbColor = this.hexToRgb(task.color);
 
         card.innerHTML = `
             <div class="task-header">
@@ -373,7 +387,7 @@ class TaskTracker {
                     Edit
                 </button>
             </div>
-            <div class="monthly-calendars" style="--habit-color: ${task.color}">
+            <div class="monthly-calendars" style="--habit-color: ${task.color}; --habit-color-rgb: ${rgbColor}">
                 ${this.generateMonthlyCalendars(task)}
             </div>
         `;
