@@ -21,27 +21,14 @@ class TaskTracker {
     }
 
     initializeApp() {
-        // Clear localStorage to ensure new colors are applied
-        // localStorage.removeItem('habits'); // Removed as per instructions
-        
-        // this.habits = JSON.parse(localStorage.getItem('habits')) || []; // Removed as per instructions
         this.editingTaskId = null;
-        this.habitCounter = 0; // Track task count for color assignment
-        
-        // New color palette
+        this.habitCounter = parseInt(localStorage.getItem('taskCounter') || '0');
         this.colorPalette = [
-            '#003f5c', // dark blue
-            '#2f4b7c', // navy
-            '#665191', // purple
-            '#a05195', // magenta
-            '#d45087', // pink
-            '#f95d6a', // coral
-            '#ff7c43', // orange
-            '#ffa600'  // amber
+            '#003f5c', '#2f4b7c', '#665191', '#a05195', 
+            '#d45087', '#f95d6a', '#ff7c43', '#ffa600'
         ];
-        
         this.initializeEventListeners();
-        this.updateExistingTaskColors(); // Update colors for existing tasks
+        this.updateExistingTaskColors();
         this.renderTasks();
     }
 
@@ -200,6 +187,7 @@ class TaskTracker {
         
         console.log('Successfully inserted task:', data);
         this.habitCounter++;
+        localStorage.setItem('taskCounter', this.habitCounter); // Save counter
         this.renderTasks();
         this.renderTodayTasks();
         nameInput.value = '';
@@ -258,10 +246,14 @@ class TaskTracker {
                 const todayTasks = tasks.filter(task => {
                     const dailyTasks = task.daily_tasks || {};
                     const todayTasks = dailyTasks[dayOfWeek] || [];
+                    console.log(`Task "${task.name}": daily_tasks =`, dailyTasks);
+                    console.log(`Task "${task.name}": todayTasks[${dayOfWeek}] =`, todayTasks);
+                    console.log(`Task "${task.name}": has ${todayTasks.length} subtasks for today`);
                     return todayTasks.length > 0; // Only show tasks that have subtasks for today
                 });
                 
                 console.log(`Found ${todayTasks.length} tasks with subtasks for today (${dayOfWeek})`);
+                console.log('Today tasks:', todayTasks);
                 
                 const todayContainer = document.getElementById('today-tasks');
                 if (!todayContainer) {
