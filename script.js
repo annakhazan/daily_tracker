@@ -254,11 +254,14 @@ class TaskTracker {
                 
                 console.log('All tasks:', tasks);
                 
-                // Show all tasks in Today's Tasks, regardless of whether they have specific daily tasks
-                const todayTasks = tasks;
-                console.log(`Showing ${todayTasks.length} tasks in Today's Tasks`);
+                // Filter tasks that have specific subtasks for today
+                const todayTasks = tasks.filter(task => {
+                    const dailyTasks = task.daily_tasks || {};
+                    const todayTasks = dailyTasks[dayOfWeek] || [];
+                    return todayTasks.length > 0; // Only show tasks that have subtasks for today
+                });
                 
-                console.log('Tasks with tasks for today:', todayTasks);
+                console.log(`Found ${todayTasks.length} tasks with subtasks for today (${dayOfWeek})`);
                 
                 const todayContainer = document.getElementById('today-tasks');
                 if (!todayContainer) {
@@ -292,10 +295,7 @@ class TaskTracker {
                                 </div>
                             </div>
                             <div class="task-list">
-                                ${todayTasks.length > 0 
-                                    ? todayTasks.map(task => `<div class="task-item">• ${task}</div>`).join('')
-                                    : '<div class="task-item">Complete this habit today</div>'
-                                }
+                                ${todayTasks.map(task => `<div class="task-item">• ${task}</div>`).join('')}
                             </div>
                         </div>
                     `;
