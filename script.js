@@ -64,7 +64,7 @@ class TaskTracker {
             this.showApp();
             return true;
         } else {
-            this.showNotification('Incorrect password', 'error');
+            alert('Incorrect password'); // Replaced showNotification with alert
             return false;
         }
     }
@@ -708,43 +708,6 @@ class TaskTracker {
     // saveHabits() { // Removed as per instructions
     //     localStorage.setItem('habits', JSON.stringify(this.habits)); // Removed as per instructions
     // } // Removed as per instructions
-
-    showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${type === 'success' ? '#4ECDC4' : type === 'error' ? '#FF6B6B' : '#45B7D1'};
-            color: white;
-            padding: 12px 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            z-index: 10000;
-            font-weight: 500;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            font-size: 0.875rem;
-        `;
-        notification.textContent = message;
-
-        document.body.appendChild(notification);
-
-        // Animate in
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                document.body.removeChild(notification);
-            }, 300);
-        }, 3000);
-    }
 
     async testSupabaseConnection() {
         console.log('Testing Supabase connection...');
