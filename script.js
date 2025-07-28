@@ -665,6 +665,8 @@ class TaskTracker {
             }
         });
         
+        console.log('Saving daily tasks:', dailyTasks);
+        
         // Update in Supabase
         const { error } = await supabaseClient
             .from('habits')
